@@ -62,7 +62,10 @@ OpenWeatherMap API – Live data source
 
 OpenWeatherMap API
 Provides realtime weather data
-(public API)
+
+*OUTPUT*:
+
+<img width="1869" height="874" alt="Image" src="https://github.com/user-attachments/assets/85518012-e967-49e0-8d76-00f36b72a3c3" />
 
 
 
