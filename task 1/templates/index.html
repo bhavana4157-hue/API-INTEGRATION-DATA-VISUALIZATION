@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Visualizer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Segoe UI, sans-serif;
+            background: linear-gradient(to right, #5daaff, #8bd3ff);
+            display: flex;
+            justify-content: center;
+            padding-top: 30px;
+        }
+
+        .wrap {
+            width: 420px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+            text-align: center;
+        }
+
+        input {
+            padding: 8px;
+            width: 70%;
+            border-radius: 6px;
+            border: 1px solid #555;
+        }
+
+        button {
+            padding: 8px 14px;
+            border: none;
+            background: #004ad7;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .cards {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .item {
+            background: #f4f9ff;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .chart-container {
+            height: 240px;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="wrap">
+    <h2>Weather Visualizer</h2>
+
+    <input id="city" placeholder="Enter city name">
+    <button onclick="load()">Show</button>
+
+    <h3 id="place" style="margin-top: 15px;"></h3>
+
+    <div class="cards">
+        <div class="item"><strong>Temp</strong><p id="t"></p></div>
+        <div class="item"><strong>Humidity</strong><p id="h"></p></div>
+        <div class="item"><strong>Feels Like</strong><p id="f"></p></div>
+        <div class="item"><strong>Wind</strong><p id="w"></p></div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="pie"></canvas>
+    </div>
+</div>
+
+<script>
+let pc;
+
+function load() {
+    const city = document.getElementById("city").value.trim();
+    if (!city) return alert("Enter a city!");
+
+    fetch(`/weather?city=${city}`)
+        .then(res => res.json())
+        .then(d => {
+            document.getElementById("place").textContent = d.city;
+            document.getElementById("t").textContent = d.temp + " °C";
+            document.getElementById("h").textContent = d.humidity + " %";
+            document.getElementById("f").textContent = (d.temp - 2) + " °C"; 
+            document.getElementById("w").textContent = (d.humidity / 10).toFixed(1) + " km/h"; 
+
+            if(pc) pc.destroy();
+
+            const ctx = document.getElementById("pie");
+            pc = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Temp', 'Humidity', 'Feels-like', 'Wind'],
+                    datasets: [{
+                        data: [
+                            d.temp,
+                            d.humidity,
+                            d.temp - 2,
+                            (d.humidity / 10)
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        });
+}
+</script>
+
+</body>
+</html>
